@@ -1,5 +1,5 @@
 import mysql from "mysql2"
-
+import { createHash } from "crypto"
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -10,12 +10,12 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE
 }).promise()
 
-async function getNotes() {
+export async function getNotes() {
     const [rows] = await pool.query("SELECT * FROM notes")
     return rows
 }
 
-async function getNote(id) {
+export async function getNote(id) {
     const [rows] = await pool.query(`
     SELECT * 
     FROM notes
@@ -24,7 +24,16 @@ async function getNote(id) {
     return rows[0]
 }
 
-async function createNote(title, content) {
+export async function getUser(id) {
+    const [rows] = await pool.query(`
+    SELECT * 
+    FROM login
+    WHERE id = ?
+    `, [id])
+    return rows[0]
+}
+
+export async function createNote(title, content) {
     const [result] =await pool.query(`
     INSERT INTO notes (title, contents)
     VALUES (?,?)
@@ -32,5 +41,19 @@ async function createNote(title, content) {
     return result.insertId
 }
 
-const result = await createNote('Second note by me - arwin', 'A note about me')
-console.log(result)
+export async function login(user, password) {
+    const [result] = await pool.query(`
+    SELECT * from login 
+    WHERE user = ? 
+    AND password = ?
+    `, [createHash('sha256').update(user).digest('hex'), createHash('sha256').update(password).digest('hex')])
+    return getUser(result.id)
+}
+
+export async function creatLogin(user, password) {
+    const [result] = await pool.query(`
+    INSERT INTO login(user, password)
+    VALUES (?, ?)
+    `, [createHash('sha256').update(user).digest('hex'), createHash('sha256').update(password).digest('hex')])
+    return getNote(result.insertId)
+}
