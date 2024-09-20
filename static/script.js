@@ -1,20 +1,22 @@
-function login() {
-    console.log("DU klarar det");
+async function login() {
     var user = document.getElementById("user").value;
     var password = document.getElementById("password").value;
 
     // Send data to the backend
-    fetch('http://127.0.0.1:3000/process', {
+    const response = await fetch('http://127.0.0.1:3000/process', {
         method: 'POST',
         headers: {
-            'Content-Type': 'login/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ user: user, password: password })
     }) 
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response from the backend
-        console.log(data);
-    })
-    console.log("pa slutet");
+    const data = await response.json()
+    
+    // Handle the response from the backend
+    if (response.status === 200) {
+        localStorage.setItem('token', data.token)
+        document.location.href = "/inside"
+        } else { 
+            alert("Failed to login")
+        }
 }

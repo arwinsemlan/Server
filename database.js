@@ -1,5 +1,5 @@
 import mysql from "mysql2"
-import { createHash } from "crypto"
+import { createHash, randomBytes } from "crypto"
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -47,13 +47,15 @@ export async function login(user, password) {
     WHERE user = ? 
     AND password = ?
     `, [createHash('sha256').update(user).digest('hex'), createHash('sha256').update(password).digest('hex')])
-    return getUser(result.id)
+    return result
 }
 
 export async function creatLogin(user, password) {
     const [result] = await pool.query(`
-    INSERT INTO login(user, password)
-    VALUES (?, ?)
-    `, [createHash('sha256').update(user).digest('hex'), createHash('sha256').update(password).digest('hex')])
-    return getNote(result.insertId)
+    INSERT INTO login(user, password, token)
+    VALUES (?, ?, ?)
+    `, [createHash('sha256').update(user).digest('hex'),
+        createHash('sha256').update(password).digest('hex'), 
+        randomBytes(16).toString('hex')])
+    return getUser(result.insertId)
 }
