@@ -11,7 +11,10 @@ const pool = mysql.createPool({
 }).promise()
 
 export async function getNotes() {
-    const [rows] = await pool.query("SELECT * FROM notes")
+    const [rows] = await pool.query(`
+    SELECT * FROM notes
+    WHERE token = ?
+    `, [localStorage.getItem('token')])
     return rows
 }
 
@@ -33,11 +36,11 @@ export async function getUser(id) {
     return rows[0]
 }
 
-export async function createNote(title, content) {
+export async function createNote(title, content, token) {
     const [result] =await pool.query(`
-    INSERT INTO notes (title, contents)
-    VALUES (?,?)
-    `, [title, content])
+    INSERT INTO notes (title, contents, token)
+    VALUES (?,?,?)
+    `, [title, content, token])
     return result.insertId
 }
 

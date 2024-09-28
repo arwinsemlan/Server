@@ -1,9 +1,10 @@
 CREATE DATABASE notes_app;
 USE notes_app;
 
-CREATE TABLE login (
+CREATE TABLE notes (
   id integer PRIMARY KEY AUTO_INCREMENT,
-  user VARCHAR(255) NOT NULL,
-  password VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  contents VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT NOW()
 );
