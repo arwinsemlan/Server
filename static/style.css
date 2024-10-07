@@ -15,11 +15,30 @@
     bottom: 5%;
 }
 
+#save_note{
+    position: absolute;
+    bottom: 5%;
+    width: auto;
+    margin-left: 5%;
+}
+
+#note{
+    background-color: transparent;
+    border: 2px solid black;
+    border-radius: 15px;
+    height: 10%;
+    text-align: start;
+    font-size: 30px;
+    width: 90%;
+    margin: 1%;
+    margin-left: 5%;
+}
+
 .show_notes{
     display: flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: start;
+    align-items: center;
+    justify-content: space-around;
     padding: 5%;
 }
 

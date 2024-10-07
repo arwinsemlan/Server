@@ -1,8 +1,69 @@
 import express from "express"
 const app = express()
-import { createNote, creatLogin, login } from "./database.js";
+import { createNote, createLogin, login, getNotes, getNote, saveNote } from "./database.js";
 
 app.use(express.json());
+
+app.get('/getnote', async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const note = req.headers.note;
+
+    const [result] = await getNote(token, note);
+    if(result) {
+        console.log(result)
+        console.log(result.contents)
+        res.json({
+            content: result.contents,
+            title: result.id
+        });
+    }
+    else {
+        res.status(400).json({
+            status: 'Failed'
+        });
+    }
+});
+
+app.get('/getnotes', async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+
+    console.log(token)
+
+    // Call the getNotes function from the database.js file
+    const result = await getNotes(token);
+    
+    if (result) {
+        res.json({
+            data: result,
+        });
+    }
+    else {
+        res.status(400).json({
+            status: 'Failed'
+        });
+    }
+});
+
+app.post('/savenote', async (req, res) => {
+    const content = req.body.content;
+    const title = req.body.title;
+    const token = req.body.token;
+
+    const result = await saveNote(content, title, token);
+
+    console.log(result)
+
+    if (result) {  
+        res.json({
+            status: 'Success',
+        });
+    }
+    else { 
+        res.status(400).json({
+            status: 'Failed'
+        });
+    }
+});
 
 // Process the form data
 app.post('/login', async (req, res) => {
@@ -56,7 +117,6 @@ app.post('/process', async (req, res) => {
         });
     }
 });
-
 
 app.use(express.static('static'))
 app.listen(3000)
